@@ -15,6 +15,7 @@ import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.*;
@@ -38,7 +39,13 @@ public class Melden2VC extends ViewController {
     private FlowPane gemeldet_cards;
 
     @FXML
+    private FlowPane gedrueckt_cards;
+
+    @FXML
     private VBox meldenBorder;
+
+    @FXML
+    private VBox drueckenBorder;
 
 
 
@@ -101,9 +108,9 @@ public class Melden2VC extends ViewController {
         String enemy1Name = (String) params[5];
         String points = (String) params[6];
 
-        my_Name.setText(myName);
-        enemy1_name.setText(enemy1Name);
-        reizenPoints.setText(points);
+        //my_Name.setText(myName);
+        //enemy1_name.setText(enemy1Name);
+        //reizenPoints.setText(points);
         meldenPoints.setText("0");
 
         combos = new ArrayList<>();
@@ -191,13 +198,21 @@ public class Melden2VC extends ViewController {
                             my_cards.getChildren().remove(cardView);
                             gemeldet_cards.getChildren().add(iGem, cardView);
                             my_cards.getChildren().add(iHand, source);
+                        } else if(gedrueckt_cards.getChildren().contains(source)) {
+                            // Gedruckt Card -> Hand Card ==> swap
+                            int iGed = gedrueckt_cards.getChildren().indexOf(source);
+                            int iHand = my_cards.getChildren().indexOf(cardView);
+                            gedrueckt_cards.getChildren().remove(source);
+                            my_cards.getChildren().remove(cardView);
+                            gedrueckt_cards.getChildren().add(iGed, cardView);
+                            my_cards.getChildren().add(iHand, source);
                         }
                     } else if(gemeldet_cards.getChildren().contains(cardView)) {
                         if(my_cards.getChildren().contains(source)) {
                             // Hand Card -> Melden Card ==> swap
                             int iGem = gemeldet_cards.getChildren().indexOf(cardView);
                             int iHand = my_cards.getChildren().indexOf(source);
-                            gemeldet_cards.getChildren().remove(source);
+                            gemeldet_cards.getChildren().remove(cardView); //TODO
                             my_cards.getChildren().remove(source);
                             gemeldet_cards.getChildren().add(iGem, source);
                             my_cards.getChildren().add(iHand, cardView);
@@ -216,6 +231,49 @@ public class Melden2VC extends ViewController {
                                 gemeldet_cards.getChildren().add(index1, source);
                                 gemeldet_cards.getChildren().add(index2, cardView);
                             }
+                        } else if(gedrueckt_cards.getChildren().contains(source)) {
+                            // Gedruckt Card -> Melden Card ==> swap
+                            int iGed = gedrueckt_cards.getChildren().indexOf(source);
+                            int iGem = gemeldet_cards.getChildren().indexOf(cardView);
+                            gedrueckt_cards.getChildren().remove(source);
+                            my_cards.getChildren().remove(cardView);
+                            gedrueckt_cards.getChildren().add(iGed, cardView);
+                            my_cards.getChildren().add(iGem, source);
+                        }
+                    } else if(gedrueckt_cards.getChildren().contains(cardView)) {
+                        if(my_cards.getChildren().contains(source)) {
+                            // Hand Card -> Gedruckt Card ==> swap
+                            int iGed = gedrueckt_cards.getChildren().indexOf(cardView);
+                            int iHand = my_cards.getChildren().indexOf(source);
+                            gedrueckt_cards.getChildren().remove(cardView);
+                            my_cards.getChildren().remove(source);
+                            gedrueckt_cards.getChildren().add(iGed, source);
+                            my_cards.getChildren().add(iHand, cardView);
+                        } else if(gemeldet_cards.getChildren().contains(source)) {
+                            // Melden Card -> Gedruckt Card ==> swap
+                            int iGed = gedrueckt_cards.getChildren().indexOf(cardView);
+                            int iMeld = gemeldet_cards.getChildren().indexOf(source);
+                            gedrueckt_cards.getChildren().remove(cardView);
+                            gemeldet_cards.getChildren().remove(source);
+                            gedrueckt_cards.getChildren().add(iGed, source);
+                            gemeldet_cards.getChildren().add(iMeld, cardView);
+                        } else if(gedrueckt_cards.getChildren().contains(source)) {
+                            // Gedruckt Card -> Gedruckt Card ==> swap
+
+
+                            int index1 = gedrueckt_cards.getChildren().indexOf(cardView);
+                            int index2 = gedrueckt_cards.getChildren().indexOf(source);
+                            if(index1 > index2) {
+                                gedrueckt_cards.getChildren().remove(index1);
+                                gedrueckt_cards.getChildren().remove(index2);
+                                gedrueckt_cards.getChildren().add(index2, cardView);
+                                gedrueckt_cards.getChildren().add(index1, source);
+                            } else {
+                                gedrueckt_cards.getChildren().remove(index2);
+                                gedrueckt_cards.getChildren().remove(index1);
+                                gedrueckt_cards.getChildren().add(index1, source);
+                                gedrueckt_cards.getChildren().add(index2, cardView);
+                            }
                         }
                     }
                     refreshMeldenPoints();
@@ -229,12 +287,19 @@ public class Melden2VC extends ViewController {
                     cardView.setVisible(true);
 
                     System.out.println("dragDone start");
+                    System.out.println();
                     System.out.println("Gemeldet");
                     for(Node node : gemeldet_cards.getChildren()){
                         System.out.println(((CardView) node).getCard().toString());
                     }
+                    System.out.println();
                     System.out.println("Hand");
                     for(Node node : my_cards.getChildren()){
+                        System.out.println(((CardView) node).getCard().toString());
+                    }
+                    System.out.println();
+                    System.out.println("Gedrueckt");
+                    for(Node node : gedrueckt_cards.getChildren()){
                         System.out.println(((CardView) node).getCard().toString());
                     }
                     System.out.println("dragDone end");
@@ -258,6 +323,10 @@ public class Melden2VC extends ViewController {
                     my_cards.getChildren().add(source);
                     gemeldet_cards.getChildren().remove(source);
                     refreshMeldenPoints();
+                } else if(gedrueckt_cards.getChildren().contains(source)) {
+                    my_cards.getChildren().add(source);
+                    gedrueckt_cards.getChildren().remove(source);
+                    refreshMeldenPoints();
                 }
             }
         });
@@ -280,10 +349,43 @@ public class Melden2VC extends ViewController {
                         gemeldet_cards.getChildren().add(source);
                         my_cards.getChildren().remove(source);
                         refreshMeldenPoints();
+                    } else if(gedrueckt_cards.getChildren().contains(source)) {
+                        gemeldet_cards.getChildren().add(source);
+                        gedrueckt_cards.getChildren().remove(source);
+                        refreshMeldenPoints();
                     }
                 }
             }
         });
+
+        drueckenBorder.setOnDragOver(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent dragEvent) {
+                if(gedrueckt_cards.getChildren().size() < 4 && highlighted) {
+                    dragEvent.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                }
+            }
+        });
+
+        drueckenBorder.setOnDragDropped(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent dragEvent) {
+                if(gedrueckt_cards.getChildren().size() < 4) {
+                    CardView source = (CardView) dragEvent.getGestureSource();
+                    if(my_cards.getChildren().contains(source)) {
+                        gedrueckt_cards.getChildren().add(source);
+                        my_cards.getChildren().remove(source);
+                        refreshMeldenPoints();
+                    } else if(gemeldet_cards.getChildren().contains(source)) {
+                        gedrueckt_cards.getChildren().add(source);
+                        gemeldet_cards.getChildren().remove(source);
+                        refreshMeldenPoints();
+                    }
+                }
+            }
+        });
+
+
     }
 
     private void refreshMeldenPoints() {
@@ -381,6 +483,10 @@ public class Melden2VC extends ViewController {
         if(highlighted) {
             btn_melden.setVisible(true);
             meldenBorder.setStyle(" -fx-border-color:red; -fx-border-radius: 18 18 18 18; -fx-border-width: 3; -fx-border-style: solid;");
+            if(mainApp.name.equals(reizenWinner)) {
+                drueckenBorder.setStyle(" -fx-border-color:red; -fx-border-radius: 18 18 18 18; -fx-border-width: 3; -fx-border-style: solid;");
+                drueckenBorder.setVisible(true);
+            }
         } else {
             btn_melden.setVisible(false);
             meldenBorder.setStyle(" -fx-border-color:black; -fx-border-radius: 18 18 18 18; -fx-border-width: 1; -fx-border-style: solid;");
@@ -401,7 +507,20 @@ public class Melden2VC extends ViewController {
     }
 
     public void melden() {
-        mainApp.sendPacket(new Action(combos));
+        if(gedrueckt_cards.getChildren().size() == 4) {
+            mainApp.showDialog("view/dialogs/TrumpfDialog.fxml","Choose Trumpf", false);
+            mainApp.dialogViewController.init();
+        } else {
+            showErrorDialog("4 Karten drücken - Säckel");
+        }
+    }
+
+    private void showErrorDialog(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.initOwner(mainApp.window);
+        alert.setTitle("Error");
+        alert.setHeaderText(message);
+        alert.showAndWait();
     }
 
 }
