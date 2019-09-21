@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.jonas.benoggl.view.mainmenu.MainMenuVC">
+   <children>
+       <Button fx:id="btn_2players" layoutX="609.0" layoutY="200.0" mnemonicParsing="false" onAction="#showPlayer2Dialog" text="2 Players" />
+       <Button fx:id="btn_3players" layoutX="609.0" layoutY="300.0" mnemonicParsing="false" onAction="#showPlayer3Dialog" text="3 Players" />
+       <Button fx:id="btn_4players" layoutX="609.0" layoutY="400.0" mnemonicParsing="false" onAction="#showPlayer4Dialog" text="4 Players" />
+   </children>
+</AnchorPane>
